@@ -2,7 +2,6 @@ package org.example;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +16,9 @@ public class Main {
         List<Element> listaElementow = objectMapper.readValue(file, new TypeReference<>() {});
 
 
-        List<String> listaStringow = listaElementow.stream()
-                .map(element -> element.id() + ":" + "wartosc:" + element.wartosc() + "waga: " + element.waga()+"\n")
-                .toList();
+//        List<String> listaStringow = listaElementow.stream()
+//                .map(element -> element.id() + ":" + "wartosc:" + element.wartosc() + "waga: " + element.waga()+"\n")
+//                .toList();
 
         //System.out.println(listaElementow);
 
@@ -37,57 +36,124 @@ public class Main {
         scanner.close();
 
 
-        int[] tabica = new int[x];
-        ArrayList<int[]>listaTablic = new ArrayList<>();
+        //Tworzenie wektorów
+
+        ArrayList<int[]>listaWektorow = new ArrayList<>();
 
         for (int i = 1; i<=y; i++){
+            int[] tabica = new int[x];
             for (int z=0; z < x; z++){
                 tabica[z] = random.nextInt(2);
             }
-            listaTablic.add(tabica);
+            listaWektorow.add(tabica);
 
         }
-
-        //System.out.println(Arrays.toString(tabica));
 
 
         List<Plecak> listaPlecaków = new ArrayList<>();
 
 
-
-        for (int[] array : listaTablic){
+//Laby pierwsze ORAZ 1. Podpunkt z Lab2
+        for (int[] array : listaWektorow){
             System.out.println(Arrays.toString(array));
         }
-        for (int[] wektor : listaTablic){
+        int idWektora = 0;
+        for (int[] wektor : listaWektorow){
+            idWektora++;
+            PlecakKlasa plecakKlasa = new PlecakKlasa(0, 0);
             for (int i=0; i<x; i++){
+                //meotda pobiera miejsce w wektorze
                 System.out.println("gen:" + (i+1)+" "+(wektor[i]));
+
                 PlecakKlasa plecak = obliczaniePlecaka(wektor, listaElementow, x);
-                listaPlecaków.add(new Plecak(plecak.getWartosc(), plecak.getWaga()));
+                plecakKlasa.setWartosc(plecak.getWartosc());
+                plecakKlasa.setWaga(plecak.getWaga());
+                //listaPlecaków.add(new Plecak(plecak.getWartosc(), plecak.getWaga()));
             }
+
+            listaPlecaków.add(new Plecak(idWektora,plecakKlasa.getWartosc(),plecakKlasa.getWaga()));
             System.out.println("\n");
         }
 
         System.out.println(listaPlecaków);
 
+        // 2. Podpunkt z lab 2
 
-//        List<Element> elementyWPlecaku = new ArrayList<>();
-        //Element[] plecaki = new Element[x];
+        int maxWaga =5;
+
+
+        listaPlecaków.forEach(plecak -> {
+
+            if (czyNieTrzebaMutować(plecak,maxWaga)){
+                mutowanie(x,plecak,listaPlecaków,listaWektorow.get(plecak.idWektora()));
+            }
+        });
+
+
+
+
     }
+
+    private static List<Plecak> mutowanie(int x,Plecak plecak,List<Plecak> listaPlecaków,int[] wektor){
+        Random random = new Random();
+
+        System.out.println("Mutowanie");
+        System.out.println(plecak.waga());
+
+        int randomNumber = random.nextInt(x);
+        System.out.println("Przed mutacją:");
+        System.out.println(wektor[randomNumber]);
+        wektor[randomNumber] = odwrotnaLiczba(wektor[randomNumber]);
+        System.out.println("Po Mutoacji");
+        System.out.println(wektor[randomNumber]);
+
+//        System.out.println(wektor[0]);
+//        System.out.println(wektor[1]);
+//        System.out.println(wektor[2]);
+//        System.out.println(wektor[3]);
+//        System.out.println(wektor[4]);
+        return null;
+    }
+
+    private static int odwrotnaLiczba(int i){
+        if (i==0){
+            return 1;
+        }else {
+            return 0;
+        }
+    }
+
+    private static Boolean czyNieTrzebaMutować(Plecak plecak,int maxWaga){
+        if (plecak.waga()>maxWaga) {
+            return true;
+        }
+        return false;
+    }
+
+
+
     private static PlecakKlasa obliczaniePlecaka(int[] wektor,List<Element> listaElementow,int x){
         //przejscie przez wektor aby obliczyć wartość plecaka
         // 1. przejdz przez każdy element wektora jeżeli wartość to 1 to przejdź przez listę elementów i sprawdz
         // zmienne elementow dla id = i
         PlecakKlasa plecak = new PlecakKlasa(0, 0);
         for (int i=0; i<x; i++){
-            if (wektor[i] !=1){
-                //System.out.println("");
+            if (wektor[i] ==1){
+                int obecnaWagaPlecaka = plecak.getWaga();
+                int obecnaWartośćPlecaka = plecak.getWartosc();
+
+                int nowaWaga = obecnaWagaPlecaka+listaElementow.get(i).waga();
+                int nowaWartosc = obecnaWartośćPlecaka+listaElementow.get(i).wartosc();
+
+                plecak.setWaga(nowaWaga);
+                plecak.setWartosc(nowaWartosc);
             }
-            int waga = listaElementow.get(i).waga();
-            int wartosc = listaElementow.get(i).wartosc();
+
             //System.out.println(plecak);
 
         }
 
+        return plecak;
     }
 
 

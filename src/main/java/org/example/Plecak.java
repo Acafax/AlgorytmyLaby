@@ -1,4 +1,4 @@
 package org.example;
 
-public record Plecak(int wartosc, int waga) {
+public record Plecak(int idWektora,int wartosc, int waga) {
 }
