@@ -46,9 +46,7 @@ public class Main {
                 tabica[z] = random.nextInt(2);
             }
             listaWektorow.add(tabica);
-
         }
-
 
         List<Plecak> listaPlecaków = new ArrayList<>();
 
@@ -81,20 +79,50 @@ public class Main {
 
         int maxWaga =5;
 
+        mutowanieLepsze(listaElementow,listaPlecaków, maxWaga, listaWektorow,x);
 
-        listaPlecaków.forEach(plecak -> {
+//        listaPlecaków.forEach(plecak -> {
+//            while (czyNieTrzebaMutować(plecak,maxWaga)){
+//                mutowanie(x,plecak,listaPlecaków,listaWektorow.get(plecak.idWektora()));
+//
+//            }
+//        });
 
-            if (czyNieTrzebaMutować(plecak,maxWaga)){
-                mutowanie(x,plecak,listaPlecaków,listaWektorow.get(plecak.idWektora()));
-            }
-        });
 
-
-
+        System.out.println("KONIEC");
+        System.out.println("");
+        System.out.println("KONIEC");
+        System.out.println("KONIEC");
 
     }
 
-    private static List<Plecak> mutowanie(int x,Plecak plecak,List<Plecak> listaPlecaków,int[] wektor){
+    private static void mutowanieLepsze(List<Element> listaElementow,List<Plecak> listaPlecaków, int maxWaga, ArrayList<int[]> listaWektorow, int x) {
+        listaPlecaków.forEach(plecak -> {
+            Random random = new Random();
+            int[] wektor = listaWektorow.get(plecak.idWektora());
+            PlecakKlasa plecakKlasa = new PlecakKlasa(plecak.waga(), plecak.wartosc());
+
+            while (czyNieTrzebaMutować(plecakKlasa,maxWaga)){
+                int randomNumber = random.nextInt(x);
+                Plecak mutowanyPlecak;
+
+                System.out.println("WAGA PLECAKA: "+plecak.waga());
+
+                wektor[randomNumber] = odwrotnaLiczba(wektor[randomNumber]);
+
+                PlecakKlasa plecakKlasaMutowany = obliczaniePlecaka(wektor, listaElementow, x);
+                plecakKlasa.setWaga(plecakKlasaMutowany.getWaga());
+                plecakKlasa.setWartosc(plecakKlasa.getWartosc());
+                System.out.println("NOWA WAGA"+plecakKlasa.getWaga());
+
+
+                System.out.println("CZY TRZEAB MUTOWAĆ: "+ czyNieTrzebaMutować(plecakKlasa,maxWaga));
+
+            }
+        });
+    }
+
+    private static String mutowanie(int x,Plecak plecak,List<Plecak> listaPlecaków,int[] wektor){
         Random random = new Random();
 
         System.out.println("Mutowanie");
@@ -102,17 +130,26 @@ public class Main {
 
         int randomNumber = random.nextInt(x);
         System.out.println("Przed mutacją:");
+        System.out.println("RANDOMOWA LICZBA: " + randomNumber);
         System.out.println(wektor[randomNumber]);
+        System.out.println("RANDOMOWA LICZBA: " + randomNumber);
+
         wektor[randomNumber] = odwrotnaLiczba(wektor[randomNumber]);
+        System.out.println(" ");
         System.out.println("Po Mutoacji");
         System.out.println(wektor[randomNumber]);
+        System.out.println("");
 
-//        System.out.println(wektor[0]);
-//        System.out.println(wektor[1]);
-//        System.out.println(wektor[2]);
-//        System.out.println(wektor[3]);
-//        System.out.println(wektor[4]);
-        return null;
+        System.out.println(wektor[0]);
+        System.out.println(wektor[1]);
+        System.out.println(wektor[2]);
+        System.out.println(wektor[3]);
+        System.out.println(wektor[4]);
+
+        listaPlecaków.add(plecak.idWektora(), plecak);
+
+        System.out.println("\n");
+        return "Zmutowany";
     }
 
     private static int odwrotnaLiczba(int i){
@@ -123,8 +160,8 @@ public class Main {
         }
     }
 
-    private static Boolean czyNieTrzebaMutować(Plecak plecak,int maxWaga){
-        if (plecak.waga()>maxWaga) {
+    private static Boolean czyNieTrzebaMutować(PlecakKlasa plecakKlasa,int maxWaga){
+        if (plecakKlasa.getWaga()>maxWaga) {
             return true;
         }
         return false;
