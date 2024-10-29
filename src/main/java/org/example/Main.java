@@ -11,7 +11,8 @@ import java.util.*;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) throws IOException {
-        File file = new File("C:\\Users\\Dell\\IdeaProjects\\AlogrytmyZadanie\\src\\main\\resources\\Elementy.json");
+        //File file = new File("C:\\Users\\Dell\\IdeaProjects\\AlogrytmyZadanie\\src\\main\\resources\\Elementy.json");
+        File file = new File("/home/wiktor/Desktop/Java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
         ObjectMapper objectMapper = new ObjectMapper();
         List<Element> listaElementow = objectMapper.readValue(file, new TypeReference<>() {});
 
@@ -50,47 +51,69 @@ public class Main {
         }
 
 
-        List<Plecak> listaPlecaków = new ArrayList<>();
+        //List<Plecak> listaPlecakow = new ArrayList<>();
 
 
 //Laby pierwsze ORAZ 1. Podpunkt z Lab2
         for (int[] array : listaWektorow){
             System.out.println(Arrays.toString(array));
         }
-        int idWektora = 0;
-        for (int[] wektor : listaWektorow){
-            idWektora++;
-            PlecakKlasa plecakKlasa = new PlecakKlasa(0, 0);
-            for (int i=0; i<x; i++){
-                //meotda pobiera miejsce w wektorze
-                System.out.println("gen:" + (i+1)+" "+(wektor[i]));
+//        int idWektora = 0;
+//        for (int[] wektor : listaWektorow){
+//            idWektora++;
+//            PlecakKlasa plecakKlasa = new PlecakKlasa(0, 0);
+//            for (int i=0; i<x; i++){
+//                //meotda pobiera miejsce w wektorze
+//                System.out.println("gen:" + (i+1)+" "+(wektor[i]));
+//
+//                PlecakKlasa plecak = obliczaniePlecaka(wektor, listaElementow, x);
+//                plecakKlasa.setWartosc(plecak.getWartosc());
+//                plecakKlasa.setWaga(plecak.getWaga());
+//                //listaPlecaków.add(new Plecak(plecak.getWartosc(), plecak.getWaga()));
+//            }
+//
+//            listaPlecaków.add(new Plecak(idWektora,plecakKlasa.getWartosc(),plecakKlasa.getWaga()));
+//            System.out.println("\n");
+//        }
 
-                PlecakKlasa plecak = obliczaniePlecaka(wektor, listaElementow, x);
-                plecakKlasa.setWartosc(plecak.getWartosc());
-                plecakKlasa.setWaga(plecak.getWaga());
-                //listaPlecaków.add(new Plecak(plecak.getWartosc(), plecak.getWaga()));
-            }
-
-            listaPlecaków.add(new Plecak(idWektora,plecakKlasa.getWartosc(),plecakKlasa.getWaga()));
-            System.out.println("\n");
-        }
-
-        System.out.println(listaPlecaków);
+        List<Plecak>  listaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
+        System.out.println(listaPlecakow);
 
         // 2. Podpunkt z lab 2
 
         int maxWaga =5;
 
+        procesMudowania(maxWaga,x,listaPlecakow, listaWektorow);
 
+//        listaPlecaków.forEach(plecak -> {
+//
+//            if (czyNieTrzebaMutować(plecak,maxWaga)){
+//                mutowanie(x,plecak,listaPlecaków,listaWektorow.get(plecak.idWektora()));
+//            }
+//        });
+
+    }
+    private static List<Plecak> procesMudowania(int maxWaga, int x,List<Plecak> listaPlecaków,ArrayList<int[]> listaWektorow){
         listaPlecaków.forEach(plecak -> {
 
             if (czyNieTrzebaMutować(plecak,maxWaga)){
                 mutowanie(x,plecak,listaPlecaków,listaWektorow.get(plecak.idWektora()));
             }
         });
+        return listaPlecaków;
+    }
 
+    private static List<Plecak> createListaPlecakow(int x, ArrayList<int[]> listaWektorow, List<Element> listaElementow ){
+        int idWektora=0;
+        List<Plecak> listaPlecakow = new ArrayList<>(List.of());
+        for (int[] wektor : listaWektorow){
+            idWektora++;
+            PlecakKlasa plecakKlasa = obliczaniePlecaka(wektor, listaElementow, x);
+            Plecak plecak = new Plecak(idWektora, plecakKlasa.getWartosc(), plecakKlasa.getWaga());
+            listaPlecakow.add(plecak);
 
-
+        }
+        return listaPlecakow;
 
     }
 
@@ -100,19 +123,20 @@ public class Main {
         System.out.println("Mutowanie");
         System.out.println(plecak.waga());
 
-        int randomNumber = random.nextInt(x);
+        int randomNumber = random.nextInt(x+1);
         System.out.println("Przed mutacją:");
         System.out.println(wektor[randomNumber]);
         wektor[randomNumber] = odwrotnaLiczba(wektor[randomNumber]);
         System.out.println("Po Mutoacji");
         System.out.println(wektor[randomNumber]);
 
+
 //        System.out.println(wektor[0]);
 //        System.out.println(wektor[1]);
 //        System.out.println(wektor[2]);
 //        System.out.println(wektor[3]);
 //        System.out.println(wektor[4]);
-        return null;
+        return listaPlecaków;
     }
 
     private static int odwrotnaLiczba(int i){
