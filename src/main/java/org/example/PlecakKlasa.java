@@ -3,12 +3,13 @@ package org.example;
 import java.util.Objects;
 
 public class PlecakKlasa{
-    private int waga;
     private int wartosc;
+    private int waga;
 
-    public PlecakKlasa(int waga, int wartosc) {
-        this.waga = waga;
+
+    public PlecakKlasa( int wartosc, int waga) {
         this.wartosc = wartosc;
+        this.waga = waga;
     }
 
 
