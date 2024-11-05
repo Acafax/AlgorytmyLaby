@@ -41,26 +41,8 @@ public class Main {
 
 
         //Tworzenie wektorów
+        ArrayList<int[]> listaWektorow = tworzenieWektorow(x, y);
 
-        ArrayList<int[]>listaWektorow = new ArrayList<>();
-
-        for (int i = 1; i<=y; i++){
-            int[] tabica = new int[x];
-            for (int z=0; z < x; z++){
-                tabica[z] = random.nextInt(2);
-            }
-            listaWektorow.add(tabica);
-
-        }
-
-
-        //List<Plecak> listaPlecakow = new ArrayList<>();
-
-
-//Laby pierwsze ORAZ 1. Podpunkt z Lab2
-        for (int[] array : listaWektorow){
-            System.out.println(Arrays.toString(array));
-        }
 
         List<Plecak>  listaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
         System.out.println(listaPlecakow);
@@ -71,16 +53,90 @@ public class Main {
 
         List<Plecak> zmutowanaListaPlecakow = procesMudowania(maxWaga, x, listaPlecakow, listaWektorow,listaElementow);
 
-        System.out.println("\nLisa stara:");
-        listaPlecakow.forEach(System.out::println);
-        System.out.println("\nLisa NOWA:");
-        zmutowanaListaPlecakow.forEach(System.out::println);
-
         List<PoleRuletki> ruletka = ruletka(zmutowanaListaPlecakow);
 
+        List<Plecak> listaNowychPlecakow = new ArrayList<>();
+        for (int i =1; i <=y ; i++){
+            listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
+        }
+        listaNowychPlecakow.forEach(System.out::println);
+//        ruletka.forEach(System.out::println);
+//        System.out.println("\n "+ wyborPolaRuletki(listaPlecakow,ruletka));
 
-        ruletka.forEach(System.out::println);
+        ArrayList<int[]> krzyzowanie = krzyzowanie(x, y, listaNowychPlecakow, listaWektorow);
 
+        System.out.println(krzyzowanie);
+
+    }
+    private static ArrayList<int[]> krzyzowanie(int wielkoscWektora,int iloscWektorow,List<Plecak> listaNowychPlecakow,ArrayList<int[]> listaWektorow ){
+        System.out.println("Krzyzowanie");
+        int miejscePodzialu = wielkoscWektora/2;
+        boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
+
+
+        ArrayList<int[]> nowaListaWektorow = new ArrayList<>();
+
+        if (listaNieparzysta){
+            for (int i = 0; i< (listaNowychPlecakow.size() - 1)  ; i+=2 ){
+
+                for (int e = miejscePodzialu; e<=iloscWektorow; e++){
+                    int[] plecak1 = listaWektorow.get(e);
+                    int[] plecak2 = listaWektorow.get(e+1);
+
+                    int wartoscPoczatkowa = plecak1[e];
+                    plecak1[e]= plecak2[e];
+                    plecak2[e] = wartoscPoczatkowa;
+
+                    nowaListaWektorow.add(plecak1);
+                    nowaListaWektorow.add(plecak2);
+                }
+                nowaListaWektorow.add(listaWektorow.get(listaWektorow.size()));
+            }
+        }else {
+            for (int e = miejscePodzialu; e<=iloscWektorow; e++){
+                int[] plecak1 = listaWektorow.get(e);
+                int[] plecak2 = listaWektorow.get(e+1);
+
+                int wartoscPoczatkowa = plecak1[e];
+                plecak1[e]= plecak2[e];
+                plecak2[e] = wartoscPoczatkowa;
+
+                nowaListaWektorow.add(plecak1);
+                nowaListaWektorow.add(plecak2);
+            }
+        }
+    return nowaListaWektorow;
+    }
+
+    private static Plecak wyborPolaRuletki(List<Plecak>  listaPlecakow,List<PoleRuletki> ruletka){
+        Random random = new Random();
+        List<PoleRuletki> listaPolDoWyboru= new ArrayList<>();
+
+        ruletka.forEach(pole -> {
+            for (int i=1; pole.wielkoscPola() > i; i++){
+                listaPolDoWyboru.add(pole);
+            }
+        });
+        System.out.println(listaPolDoWyboru.size());
+        int randomIndex = random.nextInt(1, listaPolDoWyboru.size());
+        System.out.println("random Index:"+randomIndex);
+        System.out.println((listaPolDoWyboru.get(randomIndex).idPlecaka()));
+        return listaPlecakow.get((listaPolDoWyboru.get(randomIndex).idPlecaka())-1);
+
+    }
+
+    private static ArrayList<int[]> tworzenieWektorow(int x, int y){
+        Random random = new Random();
+        ArrayList<int[]>listaWektorow = new ArrayList<>();
+
+        for (int i = 1; i<=y; i++){
+            int[] tabica = new int[x];
+            for (int z=0; z < x; z++){
+                tabica[z] = random.nextInt(2);
+            }
+            listaWektorow.add(tabica);
+        }
+        return listaWektorow;
     }
 
         private static List<PoleRuletki> ruletka(List<Plecak> listaPlecakow){
@@ -92,15 +148,13 @@ public class Main {
             //stowrzenie listy z przypisaymi polami
             List<PoleRuletki> listaPolRuletki = new ArrayList<>();
             listaPlecakow.forEach(plecak -> {
-                System.out.println(jednorazowePoleNaRuletce);
                 float wiekoscPola = plecak.wartosc() * jednorazowePoleNaRuletce*1000;
                 //BigDecimal bigDecimal = new BigDecimal(wiekoscPola).setScale(3, RoundingMode.HALF_UP);
                 listaPolRuletki.add(new PoleRuletki(plecak.idWektora(), wiekoscPola));
+
+//DODAĆ DODAWANIE RULATI
+
             });
-
-
-
-
             return listaPolRuletki;
         }
 
