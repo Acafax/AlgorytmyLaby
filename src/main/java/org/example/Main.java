@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
     public static void main(String[] args) throws IOException {
         //File file = new File("C:\\Users\\Dell\\IdeaProjects\\AlogrytmyZadanie\\src\\main\\resources\\Elementy.json");
-        File file = new File("/home/wiktor/Desktop/Java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
+        //File file = new File("/home/wiktor/Desktop/Java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
+        File file = new File("/home/wiktor/Pulpit/java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
+
         ObjectMapper objectMapper = new ObjectMapper();
         List<Element> listaElementow = objectMapper.readValue(file, new TypeReference<>() {});
 
@@ -45,7 +47,7 @@ public class Main {
 
 
         List<Plecak>  listaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
-        System.out.println(listaPlecakow);
+        //System.out.println(listaPlecakow);
 
         // 2. Podpunkt z lab 2
 
@@ -59,53 +61,116 @@ public class Main {
         for (int i =1; i <=y ; i++){
             listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
         }
-        listaNowychPlecakow.forEach(System.out::println);
-//        ruletka.forEach(System.out::println);
-//        System.out.println("\n "+ wyborPolaRuletki(listaPlecakow,ruletka));
+        //ruletka.forEach(System.out::println);
+        //System.out.println("\n "+ wyborPolaRuletki(listaPlecakow,ruletka));
+        //System.out.println("NOWA PULA PLECAKOW:");
+        //zmutowanaListaPlecakow.forEach(System.out::println);
+        //listaNowychPlecakow.forEach(System.out::println);
+
+
+
+
+
+        wyswietlWektor(listaWektorow);
 
         ArrayList<int[]> krzyzowanie = krzyzowanie(x, y, listaNowychPlecakow, listaWektorow);
 
-        System.out.println(krzyzowanie);
+        System.out.println("Po Krzyzowaniu:");
+        wyswietlWektor(krzyzowanie);
 
     }
+    private static void wyswietlWektor(ArrayList<int[]> listaWektorow){
+        listaWektorow.forEach(wektor -> {
+            String string = Arrays.toString(wektor);
+            System.out.println(string);
+        });
+    }
+
+
+//    private static ArrayList<int[]> krzyzowanie(int miejscePodzialu, ArrayList<int[]> listaNowychWektorow, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow){
+//        for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
+//            int[] plecak1 = listaWektorow.get(i);
+//            int[] plecak2 = listaWektorow.get(i+1);
+//
+//            int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
+//            int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
+//
+//            for(int e= miejscePodzialu; e< plecak1.length; e++){
+//                nowyPlecak1[e] = plecak2[e];
+//                nowyPlecak2[e] = plecak1[e];
+//            }
+//            listaNowychWektorow.add(nowyPlecak1);
+//            listaNowychWektorow.add(nowyPlecak2);
+//        }
+//        return listaNowychWektorow;
+//    }
+//    private static ArrayList<int[]> procesKrzyzowanie(int wielkoscWektora, int iloscWektorow, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
+//        System.out.println("Krzyzowanie");
+//        int miejscePodzialu = wielkoscWektora/2;
+//        boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
+//
+//        ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
+//
+//        System.out.printf("\n");
+//        if (listaNieparzysta){
+//            ArrayList<int[]> listaNowychWektorowPoKrzyzowaniu = krzyzowanie(miejscePodzialu, listaNowychWektorow, listaNowychPlecakow, listaWektorow);
+//            System.out.println("WIELKOSC"+listaNowychWektorowPoKrzyzowaniu.size());
+//
+//            listaNowychWektorow.addAll(listaNowychWektorowPoKrzyzowaniu);
+//            listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
+//            System.out.println("Lista Nieparzysta");
+//
+//        }else {
+//            ArrayList<int[]> listaNowychWektorowPoKrzyzowaniu = krzyzowanie(miejscePodzialu, listaNowychWektorow, listaNowychPlecakow, listaWektorow);
+//            listaNowychWektorow.addAll(listaNowychWektorowPoKrzyzowaniu);
+//            System.out.println("Lista Parzysta");
+//        }
+//        return listaNowychWektorow;
+//    }
+
     private static ArrayList<int[]> krzyzowanie(int wielkoscWektora,int iloscWektorow,List<Plecak> listaNowychPlecakow,ArrayList<int[]> listaWektorow ){
         System.out.println("Krzyzowanie");
         int miejscePodzialu = wielkoscWektora/2;
         boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
 
+        ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
 
-        ArrayList<int[]> nowaListaWektorow = new ArrayList<>();
-
+        System.out.printf("\n");
         if (listaNieparzysta){
-            for (int i = 0; i< (listaNowychPlecakow.size() - 1)  ; i+=2 ){
+            for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
+                    int[] plecak1 = listaWektorow.get(i);
+                    int[] plecak2 = listaWektorow.get(i+1);
 
-                for (int e = miejscePodzialu; e<=iloscWektorow; e++){
-                    int[] plecak1 = listaWektorow.get(e);
-                    int[] plecak2 = listaWektorow.get(e+1);
+                    int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
+                    int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
 
-                    int wartoscPoczatkowa = plecak1[e];
-                    plecak1[e]= plecak2[e];
-                    plecak2[e] = wartoscPoczatkowa;
-
-                    nowaListaWektorow.add(plecak1);
-                    nowaListaWektorow.add(plecak2);
-                }
-                nowaListaWektorow.add(listaWektorow.get(listaWektorow.size()));
+                    for(int e= miejscePodzialu; e< plecak1.length; e++){
+                        nowyPlecak1[e] = plecak2[e];
+                        nowyPlecak2[e] = plecak1[e];
+                    }
+                    listaNowychWektorow.add(nowyPlecak1);
+                    listaNowychWektorow.add(nowyPlecak2);
             }
+            listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
+
         }else {
-            for (int e = miejscePodzialu; e<=iloscWektorow; e++){
-                int[] plecak1 = listaWektorow.get(e);
-                int[] plecak2 = listaWektorow.get(e+1);
+            for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
 
-                int wartoscPoczatkowa = plecak1[e];
-                plecak1[e]= plecak2[e];
-                plecak2[e] = wartoscPoczatkowa;
+                int[] plecak1 = listaWektorow.get(i);
+                int[] plecak2 = listaWektorow.get(i+1);
 
-                nowaListaWektorow.add(plecak1);
-                nowaListaWektorow.add(plecak2);
+                int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
+                int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
+
+                for(int e= miejscePodzialu; e< plecak1.length; e++){
+                    nowyPlecak1[e] = plecak2[e];
+                    nowyPlecak2[e] = plecak1[e];
+                }
+                listaNowychWektorow.add(nowyPlecak1);
+                listaNowychWektorow.add(nowyPlecak2);
             }
         }
-    return nowaListaWektorow;
+    return listaNowychWektorow;
     }
 
     private static Plecak wyborPolaRuletki(List<Plecak>  listaPlecakow,List<PoleRuletki> ruletka){
@@ -113,6 +178,7 @@ public class Main {
         List<PoleRuletki> listaPolDoWyboru= new ArrayList<>();
 
         ruletka.forEach(pole -> {
+
             for (int i=1; pole.wielkoscPola() > i; i++){
                 listaPolDoWyboru.add(pole);
             }
