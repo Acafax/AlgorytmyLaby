@@ -11,6 +11,7 @@ public class PlecakKlasa{
         this.wartosc = wartosc;
         this.waga = waga;
     }
+    public PlecakKlasa(){}
 
 
     @Override
