@@ -45,15 +45,23 @@ public class Main {
         //Tworzenie wektorów
         ArrayList<int[]> listaWektorow = tworzenieWektorow(x, y);
 
+        wyswietlWektor(listaWektorow);
+        System.out.println("\n");
 
         List<Plecak>  listaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
-        //System.out.println(listaPlecakow);
-
+//        System.out.println("Początkowa lista plecakow:");
+//        listaPlecakow.forEach(System.out::println);
+//        System.out.println("\n");
         // 2. Podpunkt z lab 2
 
-        int maxWaga =10;
+        int maxWaga =20;
 
         List<Plecak> zmutowanaListaPlecakow = procesMudowania(maxWaga, x, listaPlecakow, listaWektorow,listaElementow);
+
+//        System.out.println("\n");
+//        System.out.println("PO MUTACJI");
+//        zmutowanaListaPlecakow.forEach(System.out::println);
+//        System.out.println("\n");
 
         List<PoleRuletki> ruletka = ruletka(zmutowanaListaPlecakow);
 
@@ -61,22 +69,18 @@ public class Main {
         for (int i =1; i <=y ; i++){
             listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
         }
-        //ruletka.forEach(System.out::println);
-        //System.out.println("\n "+ wyborPolaRuletki(listaPlecakow,ruletka));
-        //System.out.println("NOWA PULA PLECAKOW:");
-        //zmutowanaListaPlecakow.forEach(System.out::println);
-        //listaNowychPlecakow.forEach(System.out::println);
+//        System.out.println("\n");
+//        System.out.println("PO RULETCE");
+//        listaNowychPlecakow.forEach(System.out::println);
+//        System.out.println("\n");
+
+        ArrayList<int[]> krzyzowanieLista = krzyzowanie(x, y, listaNowychPlecakow, listaWektorow);
 
 
-
-
-
-        wyswietlWektor(listaWektorow);
-
-        ArrayList<int[]> krzyzowanie = krzyzowanie(x, y, listaNowychPlecakow, listaWektorow);
-
-        System.out.println("Po Krzyzowaniu:");
-        wyswietlWektor(krzyzowanie);
+        System.out.println("\n");
+        System.out.println("PO KRZYZOWANIU");
+        wyswietlWektor(krzyzowanieLista);
+        System.out.println("\n");
 
     }
     private static void wyswietlWektor(ArrayList<int[]> listaWektorow){
@@ -86,56 +90,14 @@ public class Main {
         });
     }
 
-
-//    private static ArrayList<int[]> krzyzowanie(int miejscePodzialu, ArrayList<int[]> listaNowychWektorow, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow){
-//        for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
-//            int[] plecak1 = listaWektorow.get(i);
-//            int[] plecak2 = listaWektorow.get(i+1);
-//
-//            int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
-//            int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
-//
-//            for(int e= miejscePodzialu; e< plecak1.length; e++){
-//                nowyPlecak1[e] = plecak2[e];
-//                nowyPlecak2[e] = plecak1[e];
-//            }
-//            listaNowychWektorow.add(nowyPlecak1);
-//            listaNowychWektorow.add(nowyPlecak2);
-//        }
-//        return listaNowychWektorow;
-//    }
-//    private static ArrayList<int[]> procesKrzyzowanie(int wielkoscWektora, int iloscWektorow, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
-//        System.out.println("Krzyzowanie");
-//        int miejscePodzialu = wielkoscWektora/2;
-//        boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
-//
-//        ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
-//
-//        System.out.printf("\n");
-//        if (listaNieparzysta){
-//            ArrayList<int[]> listaNowychWektorowPoKrzyzowaniu = krzyzowanie(miejscePodzialu, listaNowychWektorow, listaNowychPlecakow, listaWektorow);
-//            System.out.println("WIELKOSC"+listaNowychWektorowPoKrzyzowaniu.size());
-//
-//            listaNowychWektorow.addAll(listaNowychWektorowPoKrzyzowaniu);
-//            listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
-//            System.out.println("Lista Nieparzysta");
-//
-//        }else {
-//            ArrayList<int[]> listaNowychWektorowPoKrzyzowaniu = krzyzowanie(miejscePodzialu, listaNowychWektorow, listaNowychPlecakow, listaWektorow);
-//            listaNowychWektorow.addAll(listaNowychWektorowPoKrzyzowaniu);
-//            System.out.println("Lista Parzysta");
-//        }
-//        return listaNowychWektorow;
-//    }
-
     private static ArrayList<int[]> krzyzowanie(int wielkoscWektora,int iloscWektorow,List<Plecak> listaNowychPlecakow,ArrayList<int[]> listaWektorow ){
         System.out.println("Krzyzowanie");
         int miejscePodzialu = wielkoscWektora/2;
+        System.out.println("MIIEJSCE PODZIALU:" + (miejscePodzialu+1));
         boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
 
         ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
 
-        System.out.printf("\n");
         if (listaNieparzysta){
             for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
                     int[] plecak1 = listaWektorow.get(i);
@@ -154,7 +116,7 @@ public class Main {
             listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
 
         }else {
-            for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
+            for (int i = 0; i<= listaNowychPlecakow.size()-2 ; i+=2 ){
 
                 int[] plecak1 = listaWektorow.get(i);
                 int[] plecak2 = listaWektorow.get(i+1);
@@ -183,10 +145,10 @@ public class Main {
                 listaPolDoWyboru.add(pole);
             }
         });
-        System.out.println(listaPolDoWyboru.size());
+        //System.out.println(listaPolDoWyboru.size());
         int randomIndex = random.nextInt(1, listaPolDoWyboru.size());
-        System.out.println("random Index:"+randomIndex);
-        System.out.println((listaPolDoWyboru.get(randomIndex).idPlecaka()));
+        //System.out.println("random Index:"+randomIndex);
+        //System.out.println((listaPolDoWyboru.get(randomIndex).idPlecaka()));
         return listaPlecakow.get((listaPolDoWyboru.get(randomIndex).idPlecaka())-1);
 
     }
@@ -234,7 +196,10 @@ public class Main {
 //            if (czyNieTrzebaMutować(plecakKlasa,maxWaga)){
 //                mutowanie(maxWaga,x,plecak,listaWektorow.get(plecak.idWektora()), listaElementow);
 //            }
+//            System.out.println(plecak);
             Plecak zmutowanyPlecak = mutowanie(maxWaga, x, plecak, listaWektorow.get(plecak.idWektora() - 1), listaElementow);
+//            System.out.println(zmutowanyPlecak);
+//            System.out.println("\n");
             listaNowychPlecaków.add(zmutowanyPlecak);
 
         });
@@ -262,12 +227,13 @@ public class Main {
     }
 
 
-    private static List<Plecak> createListaPlecakow(int x, ArrayList<int[]> listaWektorow, List<Element> listaElementow ){
+    private static List<Plecak> createListaPlecakow(int dlugoscWektora, ArrayList<int[]> listaWektorow, List<Element> listaElementow ){
         int idWektora=0;
         List<Plecak> listaPlecakow = new ArrayList<>(List.of());
         for (int[] wektor : listaWektorow){
             idWektora++;
-            PlecakKlasa plecakKlasa = createPlecakKlasa(wektor, listaElementow, x);
+
+            PlecakKlasa plecakKlasa = createPlecakKlasa(wektor, listaElementow, dlugoscWektora);
             Plecak plecak = new Plecak(idWektora, plecakKlasa.getWartosc(), plecakKlasa.getWaga());
             listaPlecakow.add(plecak);
 
@@ -275,7 +241,6 @@ public class Main {
         return listaPlecakow;
 
     }
-
     private static int odwrotnaLiczba(int i){
         if (i==0){
             return 1;
@@ -307,11 +272,8 @@ public class Main {
                 plecak.setWaga(nowaWaga);
                 plecak.setWartosc(nowaWartosc);
             }
-
             //System.out.println(plecak);
-
         }
-
         return plecak;
     }
 
