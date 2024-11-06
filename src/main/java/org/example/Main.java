@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -27,38 +28,65 @@ public class Main {
 
 //        System.out.print("Podaj ilosc wektorow/ ilosc elementow:");
 //        int y = scanner.nextInt();
-        int y= 20;
+        int y= 5;
         scanner.close();
 
         //Tworzenie wektorów
         ArrayList<int[]> listaWektorow = tworzenieWektorow(x, y);
 
+        System.out.println("POCZĄTEK:");
+        wyswietlWektor(listaWektorow);
+        System.out.println("");
         List<Plecak>  listaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
 
-
-        int maxWaga =20;
-
-//        int iloscPrzejscPetli =0;
-//        while ( iloscPrzejscPetli <=50){
-//           iloscPrzejscPetli++;
-//
-//
-//        }
-        List<Plecak> zmutowanaListaPlecakow = procesMudowania(maxWaga, x, listaPlecakow, listaWektorow,listaElementow);
+        listaPlecakow.stream()
+                .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
+                .forEach(System.out::println);
 
 
-        List<PoleRuletki> ruletka = ruletka(zmutowanaListaPlecakow);
+        int maxWaga =10;
 
-        List<Plecak> listaNowychPlecakow = new ArrayList<>();
-        for (int i =1; i <=y ; i++){
-            listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
+        int iloscPrzejscPetli =0;
+        //ArrayList<int[]> listaWektorowKoncowych = new ArrayList<>();
+        while ( iloscPrzejscPetli <=50){
+           iloscPrzejscPetli++;
+
+            List<Plecak> zmutowanaListaPlecakow = procesMudowania(maxWaga, x, listaPlecakow, listaWektorow,listaElementow);
+
+
+            List<PoleRuletki> ruletka = ruletka(zmutowanaListaPlecakow);
+
+            List<Plecak> listaNowychPlecakow = new ArrayList<>();
+            for (int i =1; i <=y ; i++){
+                listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
+            }
+
+            ArrayList<int[]> krzyzowanieLista = procesKrzyzowania(x,listaNowychPlecakow, listaWektorow);
+
+            //wyswietlWektor(krzyzowanieLista);
+            //System.out.println("\n");
+            //System.out.println(Arrays.toString(mutowanieWektora(maxWaga, x, krzyzowanieLista.getFirst(), listaElementow)));
+
+            krzyzowanieLista.replaceAll(wektor ->{
+                Random random = new Random();
+                int i = random.nextInt(100);
+                if (i <15){
+                    return mutowanieWektora(maxWaga,x,wektor,listaElementow);
+                }else return wektor;
+
+            });
+            listaWektorow.clear();
+            listaWektorow.addAll(krzyzowanieLista);
+            //listaWektorowKoncowych.addAll(krzyzowanieLista);
         }
+        System.out.println("\nKONIEC");
+        wyswietlWektor(listaWektorow);
+        System.out.println("");
+        List<Plecak>  listaPlecakow2 = createListaPlecakow(x,listaWektorow, listaElementow);
 
-        ArrayList<int[]> krzyzowanieLista = procesKrzyzowania(x,listaNowychPlecakow, listaWektorow);
-
-        wyswietlWektor(krzyzowanieLista);
-        System.out.println("\n");
-        System.out.println(Arrays.toString(mutowanieWektora(maxWaga, x, krzyzowanieLista.getFirst(), listaElementow)));
+        listaPlecakow2.stream()
+                .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
+                .forEach(System.out::println);
 
 
     }
@@ -79,16 +107,16 @@ public class Main {
         for (int i = 0; i<= listaNowychPlecakow.size()-2 ; i+=2 ){
             int[] plecak1 = listaWektorow.get(i);
             int[] plecak2 = listaWektorow.get(i+1);
-            System.out.println("\ni = "+ i);
+            //System.out.println("\ni = "+ i);
 
 
             int osobystePrawdopodobienstwoKrzyzowania = random.nextInt(0, 100);
-            System.out.println(osobystePrawdopodobienstwoKrzyzowania);
+            //System.out.println(osobystePrawdopodobienstwoKrzyzowania);
             if (osobystePrawdopodobienstwoKrzyzowania>warunekKrzyzowania) {
                 listaNowychWektorow.add(plecak1);
                 listaNowychWektorow.add(plecak2);
             }else {
-                System.out.println("KRZYZOWANIE");
+                //System.out.println("KRZYZOWANIE");
                 int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
                 int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
 
