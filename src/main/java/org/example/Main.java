@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -38,7 +35,7 @@ public class Main {
 
 //        System.out.print("Podaj ilosc wektorow/ ilosc elementow:");
 //        int y = scanner.nextInt();
-        int y= 5;
+        int y= 20;
         scanner.close();
 
 
@@ -74,7 +71,7 @@ public class Main {
 //        listaNowychPlecakow.forEach(System.out::println);
 //        System.out.println("\n");
 
-        ArrayList<int[]> krzyzowanieLista = krzyzowanie(x, y, listaNowychPlecakow, listaWektorow);
+        ArrayList<int[]> krzyzowanieLista = procesKrzyzowania(x, y, listaNowychPlecakow, listaWektorow);
 
 
         System.out.println("\n");
@@ -90,37 +87,25 @@ public class Main {
         });
     }
 
-    private static ArrayList<int[]> krzyzowanie(int wielkoscWektora,int iloscWektorow,List<Plecak> listaNowychPlecakow,ArrayList<int[]> listaWektorow ){
-        System.out.println("Krzyzowanie");
+    private static ArrayList<int[]> krzyzowanie(int wielkoscWektora, int iloscWektorow, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
         int miejscePodzialu = wielkoscWektora/2;
-        System.out.println("MIIEJSCE PODZIALU:" + (miejscePodzialu+1));
-        boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
-
+        int warunekKrzyzowania = 82;
+        Random random = new Random();
         ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
 
-        if (listaNieparzysta){
-            for (int i = 0; i<= listaNowychPlecakow.size()-2    ; i+=2 ){
-                    int[] plecak1 = listaWektorow.get(i);
-                    int[] plecak2 = listaWektorow.get(i+1);
+        for (int i = 0; i<= listaNowychPlecakow.size()-2 ; i+=2 ){
+            int[] plecak1 = listaWektorow.get(i);
+            int[] plecak2 = listaWektorow.get(i+1);
+            System.out.println("\ni = "+ i);
 
-                    int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
-                    int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
 
-                    for(int e= miejscePodzialu; e< plecak1.length; e++){
-                        nowyPlecak1[e] = plecak2[e];
-                        nowyPlecak2[e] = plecak1[e];
-                    }
-                    listaNowychWektorow.add(nowyPlecak1);
-                    listaNowychWektorow.add(nowyPlecak2);
-            }
-            listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
-
-        }else {
-            for (int i = 0; i<= listaNowychPlecakow.size()-2 ; i+=2 ){
-
-                int[] plecak1 = listaWektorow.get(i);
-                int[] plecak2 = listaWektorow.get(i+1);
-
+            int osobystePrawdopodobienstwoKrzyzowania = random.nextInt(0, 100);
+            System.out.println(osobystePrawdopodobienstwoKrzyzowania);
+            if (osobystePrawdopodobienstwoKrzyzowania>warunekKrzyzowania) {
+                listaNowychWektorow.add(plecak1);
+                listaNowychWektorow.add(plecak2);
+            }else {
+                System.out.println("KRZYZOWANIE");
                 int[] nowyPlecak1 = Arrays.copyOf(plecak1, plecak1.length);
                 int[] nowyPlecak2 = Arrays.copyOf(plecak2, plecak2.length);
 
@@ -132,6 +117,20 @@ public class Main {
                 listaNowychWektorow.add(nowyPlecak2);
             }
         }
+        return listaNowychWektorow;
+    }
+
+    private static ArrayList<int[]> procesKrzyzowania(int wielkoscWektora, int iloscWektorow, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
+        boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
+        ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
+
+        if (listaNieparzysta){
+            listaNowychWektorow.addAll(krzyzowanie(wielkoscWektora,iloscWektorow,listaNowychPlecakow,listaWektorow));
+            listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
+        }else {
+            listaNowychWektorow.addAll(krzyzowanie(wielkoscWektora,iloscWektorow,listaNowychPlecakow,listaWektorow));
+        }
+        
     return listaNowychWektorow;
     }
 
