@@ -37,25 +37,30 @@ public class Main {
         System.out.println("POCZĄTEK:");
         wyswietlWektor(listaWektorow);
         System.out.println("");
-        List<Plecak>  listaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
+        List<Plecak>  PoczatkowalistaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
 
-        listaPlecakow.stream()
+        PoczatkowalistaPlecakow.stream()
                 .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
                 .forEach(System.out::println);
-
 
         int maxWaga =10;
 
         int iloscPrzejscPetli =0;
         //ArrayList<int[]> listaWektorowKoncowych = new ArrayList<>();
+
         while ( iloscPrzejscPetli <=50){
+
+            List<Plecak> listaPlecakow = new ArrayList<>(PoczatkowalistaPlecakow);
+
            iloscPrzejscPetli++;
 
+            // Proces mudowanie przy przeładowaniu
             List<Plecak> zmutowanaListaPlecakow = procesMudowania(maxWaga, x, listaPlecakow, listaWektorow,listaElementow);
 
+            PoczatkowalistaPlecakow.clear();
+            PoczatkowalistaPlecakow.addAll(zmutowanaListaPlecakow);
 
             List<PoleRuletki> ruletka = ruletka(zmutowanaListaPlecakow);
-
             List<Plecak> listaNowychPlecakow = new ArrayList<>();
             for (int i =1; i <=y ; i++){
                 listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
@@ -67,17 +72,21 @@ public class Main {
             //System.out.println("\n");
             //System.out.println(Arrays.toString(mutowanieWektora(maxWaga, x, krzyzowanieLista.getFirst(), listaElementow)));
 
+            System.out.println("SKRZYZOWANA LISTA PRZED MUTACJA\n");
+            wyswietlWektor(krzyzowanieLista);
             krzyzowanieLista.replaceAll(wektor ->{
                 Random random = new Random();
                 int i = random.nextInt(100);
                 if (i <15){
+                    System.out.println("MUTACJA" );
                     return mutowanieWektora(maxWaga,x,wektor,listaElementow);
                 }else return wektor;
 
             });
+
             listaWektorow.clear();
             listaWektorow.addAll(krzyzowanieLista);
-            //listaWektorowKoncowych.addAll(krzyzowanieLista);
+
         }
         System.out.println("\nKONIEC");
         wyswietlWektor(listaWektorow);
@@ -157,6 +166,17 @@ public class Main {
         return listaPlecakow.get((listaPolDoWyboru.get(randomIndex).idPlecaka())-1);
     }
 
+    private static List<PoleRuletki> ruletka(List<Plecak> listaPlecakow){
+        int wartoscPlecakow  = listaPlecakow.stream().mapToInt(Plecak::wartosc).sum();
+        float jednorazowePoleNaRuletce = (float) 1 /wartoscPlecakow;
+        List<PoleRuletki> listaPolRuletki = new ArrayList<>();
+        listaPlecakow.forEach(plecak -> {
+            float wiekoscPola = plecak.wartosc() * jednorazowePoleNaRuletce*1000;
+            listaPolRuletki.add(new PoleRuletki(plecak.idWektora(), wiekoscPola));
+        });
+        return listaPolRuletki;
+    }
+
     private static ArrayList<int[]> tworzenieWektorow(int x, int y){
         Random random = new Random();
         ArrayList<int[]>listaWektorow = new ArrayList<>();
@@ -171,17 +191,6 @@ public class Main {
         return listaWektorow;
     }
 
-    private static List<PoleRuletki> ruletka(List<Plecak> listaPlecakow){
-        int wartoscPlecakow  = listaPlecakow.stream().mapToInt(Plecak::wartosc).sum();
-        float jednorazowePoleNaRuletce = (float) 1 /wartoscPlecakow;
-        List<PoleRuletki> listaPolRuletki = new ArrayList<>();
-        listaPlecakow.forEach(plecak -> {
-            float wiekoscPola = plecak.wartosc() * jednorazowePoleNaRuletce*1000;
-            listaPolRuletki.add(new PoleRuletki(plecak.idWektora(), wiekoscPola));
-        });
-        return listaPolRuletki;
-    }
-
     private static List<Plecak> procesMudowania(int maxWaga, int x,List<Plecak> listaPlecaków,ArrayList<int[]> listaWektorow,List<Element> listaElementow ){
         List<Plecak> listaNowychPlecaków = new ArrayList<>();
         listaPlecaków.forEach(plecak -> {
@@ -190,23 +199,6 @@ public class Main {
             listaNowychPlecaków.add(zmutowanyPlecak);
         });
         return listaNowychPlecaków;
-    }
-
-    private static int[] mutowanieWektora(int maxWaga,int x,int[] wektor,List<Element> listaElementow ){
-        Random random = new Random();
-        int randomNumber = random.nextInt(x);
-
-        for (int i= 0; i <x; i++){
-            if (i==randomNumber){
-                wektor[i] = odwrotnaLiczba(wektor[i]);
-            }
-        }
-        PlecakKlasa plecakKlasa = createPlecakKlasa(wektor, listaElementow, x);
-        if (plecakKlasa.getWaga()>maxWaga){
-            mutowanieWektora(maxWaga,x,wektor,listaElementow);
-        }
-
-        return  wektor;
     }
 
     private static Plecak mutowanie(int maxWaga,int x,Plecak plecak,int[] wektor,List<Element> listaElementow ){
@@ -227,6 +219,23 @@ public class Main {
         }
 
         return new Plecak(plecak.idWektora(),plecakKlasa.getWartosc(),plecakKlasa.getWaga());
+    }
+
+    private static int[] mutowanieWektora(int maxWaga,int x,int[] wektor,List<Element> listaElementow ){
+        Random random = new Random();
+        int randomNumber = random.nextInt(x);
+
+        for (int i= 0; i <x; i++){
+            if (i==randomNumber){
+                wektor[i] = odwrotnaLiczba(wektor[i]);
+            }
+        }
+        PlecakKlasa plecakKlasa = createPlecakKlasa(wektor, listaElementow, x);
+        if (plecakKlasa.getWaga()>maxWaga){
+            mutowanieWektora(maxWaga,x,wektor,listaElementow);
+        }
+
+        return  wektor;
     }
 
     private static List<Plecak> createListaPlecakow(int dlugoscWektora, ArrayList<int[]> listaWektorow, List<Element> listaElementow ){
