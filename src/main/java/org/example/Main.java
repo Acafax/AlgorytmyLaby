@@ -37,9 +37,9 @@ public class Main {
         System.out.println("POCZĄTEK:");
         wyswietlWektor(listaWektorow);
         System.out.println("");
-        List<Plecak>  PoczatkowalistaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
+        List<Plecak>  poczatkowalistaPlecakow = createListaPlecakow(x,listaWektorow, listaElementow);
 
-        PoczatkowalistaPlecakow.stream()
+        poczatkowalistaPlecakow.stream()
                 .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
                 .forEach(System.out::println);
 
@@ -50,15 +50,15 @@ public class Main {
 
         while ( iloscPrzejscPetli <=50){
 
-            List<Plecak> listaPlecakow = new ArrayList<>(PoczatkowalistaPlecakow);
+            List<Plecak> listaPlecakow = new ArrayList<>(poczatkowalistaPlecakow);
 
            iloscPrzejscPetli++;
 
             // Proces mudowanie przy przeładowaniu
             List<Plecak> zmutowanaListaPlecakow = procesMudowania(maxWaga, x, listaPlecakow, listaWektorow,listaElementow);
 
-            PoczatkowalistaPlecakow.clear();
-            PoczatkowalistaPlecakow.addAll(zmutowanaListaPlecakow);
+            poczatkowalistaPlecakow.clear();
+            poczatkowalistaPlecakow.addAll(zmutowanaListaPlecakow);
 
             List<PoleRuletki> ruletka = ruletka(zmutowanaListaPlecakow);
             List<Plecak> listaNowychPlecakow = new ArrayList<>();
@@ -68,24 +68,24 @@ public class Main {
 
             ArrayList<int[]> krzyzowanieLista = procesKrzyzowania(x,listaNowychPlecakow, listaWektorow);
 
-            //wyswietlWektor(krzyzowanieLista);
-            //System.out.println("\n");
-            //System.out.println(Arrays.toString(mutowanieWektora(maxWaga, x, krzyzowanieLista.getFirst(), listaElementow)));
-
-            System.out.println("SKRZYZOWANA LISTA PRZED MUTACJA\n");
-            wyswietlWektor(krzyzowanieLista);
             krzyzowanieLista.replaceAll(wektor ->{
                 Random random = new Random();
                 int i = random.nextInt(100);
                 if (i <15){
-                    System.out.println("MUTACJA" );
                     return mutowanieWektora(maxWaga,x,wektor,listaElementow);
                 }else return wektor;
 
             });
 
+            // podmiana starej listy wektorow na nowy
             listaWektorow.clear();
             listaWektorow.addAll(krzyzowanieLista);
+
+            //podmiana starej listy plecakow na nowy
+            List<Plecak> listaPlecakow1 = createListaPlecakow(x, listaWektorow, listaElementow);
+            poczatkowalistaPlecakow.clear();
+            poczatkowalistaPlecakow.addAll(listaPlecakow1);
+
 
         }
         System.out.println("\nKONIEC");
