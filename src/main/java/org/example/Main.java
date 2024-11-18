@@ -7,6 +7,7 @@ import com.sun.source.tree.TryTree;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -14,14 +15,25 @@ import java.util.stream.Stream;
 public class Main {
     public static void main(String[] args) throws IOException {
         //File file = new File("C:\\Users\\Dell\\IdeaProjects\\AlogrytmyZadanie\\src\\main\\resources\\Elementy.json");
-        //File file = new File("/home/wiktor/Desktop/Java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
-        File file = new File("/home/wiktor/Pulpit/java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Element> listaElementow = objectMapper.readValue(file, new TypeReference<>() {});
+        File file = new File("/home/wiktor/Desktop/Java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
+        //File file = new File("/home/wiktor/Pulpit/java_projekty/AlgorytmyLaby/src/main/resources/Elementy.json");
 
         Scanner scanner = new Scanner(System.in);
 
+        List<Element> listaElementowPoczatkowa = List.of();
+        System.out.print("Czy dodajesz własne elementy? [y/n] ");
+        String czyDodajeszWlasneElementy = scanner.nextLine();
+        if (czyDodajeszWlasneElementy.strip().equalsIgnoreCase("y")){
+            listaElementowPoczatkowa = createOwnElements();
+        } else if (czyDodajeszWlasneElementy.strip().equalsIgnoreCase("n")) {
+            System.out.println("Nie dodajemy nowych elementów");
+            ObjectMapper objectMapper = new ObjectMapper();
+            listaElementowPoczatkowa = objectMapper.readValue(file, new TypeReference<>() {
+            });
+
+        }
+
+        List<Element> listaElementow = listaElementowPoczatkowa;
         System.out.print("podaj długość pojedyńczego wektoru:");
         int x =0;
         x= scanner.nextInt();
@@ -36,30 +48,33 @@ public class Main {
         System.out.print("Podaj MAX wagę:");
         int maxW = 0;
         maxW = scanner.nextInt();
+
+        System.out.println("podaj globalne praw. mutowania [1-100]");
+        int prawMutowania = scanner.nextInt();
+
+        System.out.println("Podaj globalne praw. krzyzowania [1-100]");
+        int prawKrzyzowania = scanner.nextInt();
         scanner.nextLine();
         //int maxWaga =10;
+        //System.out.println((maxW*10/x*10) );
 
-        while (true){
-            if ((maxW/x) < 65){
+            if ((maxW*10/x*10) < 65){
                 System.out.print("UWAGA \n wybrana max waga może być za mała, czy na pewno taka ma być? [y/n]");
 
                 String answer = scanner.nextLine();
 
                 if (answer.strip().equalsIgnoreCase("y")){
-                    break;
+
                 } else if (answer.strip().equalsIgnoreCase("n")) {
                     System.out.println("Podaj nową wartość dla max wagi:");
                     maxW = scanner.nextInt();
-                    break;
+
                 }
 
-            }else {
-                return;
             }
-        }
+
 
         int dlugowscWektora = x;
-        int iloscWektorow = y;
         int maxWaga = maxW;
         scanner.close();
 
@@ -100,12 +115,10 @@ public class Main {
                 listaNowychPlecakow.add(wyborPolaRuletki(listaPlecakow,ruletka));
             }
 
-            ArrayList<int[]> krzyzowanieLista = procesKrzyzowania(dlugowscWektora,listaNowychPlecakow, listaWektorow);
+            ArrayList<int[]> krzyzowanieLista = procesKrzyzowania(prawKrzyzowania,dlugowscWektora,listaNowychPlecakow, listaWektorow);
 
             krzyzowanieLista.replaceAll(wektor ->{
-                Random random = new Random();
-                int i = random.nextInt(100);
-                if (i <15){
+                if (prawMutowania <15){ // globalne praw. mutowania
                     return mutowanieWektora(maxWaga,dlugowscWektora,wektor,listaElementow);
                 }else return wektor;
 
@@ -134,13 +147,21 @@ public class Main {
                 .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
                 .forEach(System.out::println);
 
-//// OPCJONALNE
-List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalistaPlecakow, listaWektorow, listaElementow);
-        System.out.println("\nKONIEC BEZ PRZELADOWANIA:");
-        plecaks.stream()
-                .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
-                .forEach(System.out::println);
+        List<Plecak> list = listaPlecakow2.stream()
+                .filter(plecak -> plecak.waga() <= maxWaga)
+                .toList();
 
+        list.forEach(System.out::println);
+        Optional<Plecak> max = list.stream().max(Comparator.comparing(Plecak::wartosc));
+        System.out.println("MAX:\n" +max + "\n");
+
+//// OPCJONALNE
+//List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalistaPlecakow, listaWektorow, listaElementow);
+//        System.out.println("\nKONIEC BEZ PRZELADOWANIA:");
+//        plecaks.stream()
+//                .map(element -> "WARTOŚĆ: " + element.wartosc() + "   WAGA:" + element.waga())
+//                .forEach(System.out::println);
+//
     }
 
     private static void wyswietlWektor(ArrayList<int[]> listaWektorow){
@@ -149,10 +170,10 @@ List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalista
             System.out.println(string);
         });
     }
-
-    private static ArrayList<int[]> krzyzowanie(int wielkoscWektora, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
+// dodanie warunku krzyzowania
+    private static ArrayList<int[]> krzyzowanie(int prawKrzyzowania ,int wielkoscWektora, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
         int miejscePodzialu = wielkoscWektora/2;
-        int warunekKrzyzowania = 82;
+        //int warunekKrzyzowania = 82;
         Random random = new Random();
         ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
 
@@ -164,7 +185,7 @@ List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalista
 
             int osobystePrawdopodobienstwoKrzyzowania = random.nextInt(0, 100);
             //System.out.println(osobystePrawdopodobienstwoKrzyzowania);
-            if (osobystePrawdopodobienstwoKrzyzowania>warunekKrzyzowania) {
+            if (osobystePrawdopodobienstwoKrzyzowania>prawKrzyzowania) {
                 listaNowychWektorow.add(plecak1);
                 listaNowychWektorow.add(plecak2);
             }else {
@@ -183,15 +204,15 @@ List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalista
         return listaNowychWektorow;
     }
 
-    private static ArrayList<int[]> procesKrzyzowania(int wielkoscWektora, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
+    private static ArrayList<int[]> procesKrzyzowania(int prawKrzyzowania,int wielkoscWektora, List<Plecak> listaNowychPlecakow, ArrayList<int[]> listaWektorow ){
         boolean listaNieparzysta = listaNowychPlecakow.size()%2!=0;
         ArrayList<int[]> listaNowychWektorow = new ArrayList<>();
 
         if (listaNieparzysta){
-            listaNowychWektorow.addAll(krzyzowanie(wielkoscWektora,listaNowychPlecakow,listaWektorow));
+            listaNowychWektorow.addAll(krzyzowanie(prawKrzyzowania,wielkoscWektora,listaNowychPlecakow,listaWektorow));
             listaNowychWektorow.add(listaWektorow.get(listaNowychPlecakow.size()-1));
         }else {
-            listaNowychWektorow.addAll(krzyzowanie(wielkoscWektora,listaNowychPlecakow,listaWektorow));
+            listaNowychWektorow.addAll(krzyzowanie(prawKrzyzowania,wielkoscWektora,listaNowychPlecakow,listaWektorow));
         }
     return listaNowychWektorow;
     }
@@ -237,7 +258,6 @@ List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalista
     private static List<Plecak> procesMudowania(int maxWaga, int x,List<Plecak> listaPlecaków,ArrayList<int[]> listaWektorow,List<Element> listaElementow ){
         List<Plecak> listaNowychPlecaków = new ArrayList<>();
         listaPlecaków.forEach(plecak -> {
-
             Plecak zmutowanyPlecak = mutowanie(maxWaga, x, plecak, listaWektorow.get(plecak.idWektora() - 1), listaElementow);
             listaNowychPlecaków.add(zmutowanyPlecak);
         });
@@ -339,6 +359,21 @@ List<Plecak> plecaks = procesMudowania(maxWaga, dlugowscWektora, poczatkowalista
     }
 
 
+    static private List<Element> createOwnElements(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nIle elementow chcesz dodać? ");
+        int numberOfElements = scanner.nextInt();
+        List<Element> listaElementow = new ArrayList<>();
+        for (int i=0; i<numberOfElements; i++){
+            System.out.print("Podaj wagę: ");
+            int waga = scanner.nextInt();
+            System.out.print("Podaj wartość: ");
+            int wartosc = scanner.nextInt();
+            Element element = new Element(i, wartosc, waga);
+            listaElementow.add(element);
+        }
+        return listaElementow;
+    }
 }
 
 
