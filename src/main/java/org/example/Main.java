@@ -99,7 +99,7 @@ public class Main {
 
 
     }
-//sdf
+    
     private static void wyswietlWektor(ArrayList<int[]> listaWektorow){
         listaWektorow.forEach(wektor -> {
             String string = Arrays.toString(wektor);
